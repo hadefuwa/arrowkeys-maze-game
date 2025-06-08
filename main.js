@@ -6,7 +6,7 @@ const HEIGHT = 800;
 const CELL_SIZE = 40;
 const PLAYER_SIZE = 40;
 const GEM_SIZE = 32;
-const VERSION = '1.0.5'; // Updated version
+const VERSION = '1.0.6'; // Updated version
 
 let level = 1;
 let player = { x: 0, y: 0, speed: 5 };
@@ -159,13 +159,11 @@ function drawArrowKeys() {
     // Draw arrow key indicators in the bottom left corner
     const baseX = 40, baseY = HEIGHT - 100;
     const size = 32;
-    // Up
+    // Up (centered above)
     drawArrow(baseX + size, baseY, 'up', keys['ArrowUp']);
-    // Left
+    // Left, Down, Right (in a row)
     drawArrow(baseX, baseY + size, 'left', keys['ArrowLeft']);
-    // Down
-    drawArrow(baseX + size, baseY + size * 2, 'down', keys['ArrowDown']);
-    // Right
+    drawArrow(baseX + size, baseY + size, 'down', keys['ArrowDown']);
     drawArrow(baseX + size * 2, baseY + size, 'right', keys['ArrowRight']);
 }
 
