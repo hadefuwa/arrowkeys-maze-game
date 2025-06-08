@@ -13,21 +13,51 @@ let player = { x: CELL_SIZE, y: CELL_SIZE, speed: 5 };
 let gem = { x: WIDTH / 2 - GEM_SIZE / 2, y: HEIGHT / 2 - GEM_SIZE / 2 };
 let keys = {};
 
-// Updated walls: path from top-left to center is open
-const walls = [
-    [0, 0, WIDTH, 10], // top border
-    [0, HEIGHT - 10, WIDTH, 10], // bottom border
-    [0, 0, 10, HEIGHT], // left border
-    [WIDTH - 10, 0, 10, HEIGHT], // right border
-    // Maze walls (leave a path open from top-left to center)
-    [100, 0, 10, 300], // vertical left
-    [200, 100, 400, 10], // horizontal top
-    [700, 100, 10, 400], // vertical right
-    [100, 700, 600, 10], // horizontal bottom
-    [400, 200, 10, 200], // vertical center
-    [200, 400, 400, 10], // horizontal center
-    // Leave a gap at (110, 300) to (400, 300) for a path
+// Multiple maze layouts
+const mazeLayouts = [
+    // Maze 1
+    [
+        [0, 0, WIDTH, 10],
+        [0, HEIGHT - 10, WIDTH, 10],
+        [0, 0, 10, HEIGHT],
+        [WIDTH - 10, 0, 10, HEIGHT],
+        [100, 0, 10, 300],
+        [200, 100, 400, 10],
+        [700, 100, 10, 400],
+        [100, 700, 600, 10],
+        [400, 200, 10, 200],
+        [200, 400, 400, 10],
+    ],
+    // Maze 2
+    [
+        [0, 0, WIDTH, 10],
+        [0, HEIGHT - 10, WIDTH, 10],
+        [0, 0, 10, HEIGHT],
+        [WIDTH - 10, 0, 10, HEIGHT],
+        [300, 0, 10, 500],
+        [500, 300, 10, 500],
+        [100, 300, 400, 10],
+        [400, 500, 400, 10],
+        [600, 100, 10, 400],
+        [200, 600, 400, 10],
+    ],
+    // Maze 3
+    [
+        [0, 0, WIDTH, 10],
+        [0, HEIGHT - 10, WIDTH, 10],
+        [0, 0, 10, HEIGHT],
+        [WIDTH - 10, 0, 10, HEIGHT],
+        [100, 100, 600, 10],
+        [100, 200, 10, 500],
+        [200, 600, 500, 10],
+        [700, 200, 10, 400],
+        [200, 200, 400, 10],
+        [400, 300, 10, 200],
+    ],
 ];
+
+let currentMazeIndex = 0;
+let walls = mazeLayouts[currentMazeIndex];
 
 function drawPlayer() {
     ctx.fillStyle = 'red';
@@ -42,7 +72,6 @@ function drawGem() {
 function drawMaze() {
     ctx.strokeStyle = '#222';
     ctx.lineWidth = 4;
-    // Draw walls
     ctx.fillStyle = '#222';
     for (const [x, y, w, h] of walls) {
         ctx.fillRect(x, y, w, h);
@@ -77,7 +106,6 @@ function movePlayer() {
     if (keys['ArrowDown']) dy = 1;
     let newX = player.x + dx * player.speed;
     let newY = player.y + dy * player.speed;
-    // Keep player in bounds and check wall collision
     if (canMove(newX, player.y)) player.x = newX;
     if (canMove(player.x, newY)) player.y = newY;
 }
@@ -90,6 +118,9 @@ function checkGemCollision() {
         player.y + PLAYER_SIZE > gem.y
     ) {
         level++;
+        // Change maze
+        currentMazeIndex = (currentMazeIndex + 1) % mazeLayouts.length;
+        walls = mazeLayouts[currentMazeIndex];
         resetPlayer();
         resetGem();
     }
@@ -106,14 +137,11 @@ function resetGem() {
 }
 
 function resizeCanvas() {
-    // Get the available window size (minus a little for margins)
     const availableWidth = window.innerWidth;
-    const availableHeight = window.innerHeight - 20; // leave a little space for top margin
-    // Calculate scale to maintain aspect ratio
+    const availableHeight = window.innerHeight - 20;
     const scale = Math.min(availableWidth / WIDTH, availableHeight / HEIGHT);
     canvas.style.width = `${WIDTH * scale}px`;
     canvas.style.height = `${HEIGHT * scale}px`;
-    // Do NOT change canvas.width or canvas.height here!
 }
 
 function gameLoop() {
