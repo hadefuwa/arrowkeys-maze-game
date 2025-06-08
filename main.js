@@ -4,14 +4,24 @@ const ctx = canvas.getContext('2d');
 const WIDTH = 800;
 const HEIGHT = 800;
 const CELL_SIZE = 40;
-const PLAYER_SIZE = 30;
-const GEM_SIZE = 20;
+const PLAYER_SIZE = 40;
+const GEM_SIZE = 32;
 const VERSION = '1.0.2'; // Updated version
 
 let level = 1;
-let player = { x: CELL_SIZE, y: CELL_SIZE, speed: 5 };
-let gem = { x: WIDTH / 2 - GEM_SIZE / 2, y: HEIGHT / 2 - GEM_SIZE / 2 };
+let player = { x: 0, y: 0, speed: 5 };
+let gem = { x: 0, y: 0 };
 let keys = {};
+
+// Load open-source sprites
+const playerImg = new Image();
+playerImg.src = 'https://kenney.nl/assets/platformer-art-deluxe/PNG/Player/pinkGirl_idle.png'; // Kenney Platformer Art Deluxe (pink girl)
+const gemImg = new Image();
+gemImg.src = 'https://kenney.nl/assets/puzzle-pack/PNG/Default/star.png'; // Kenney Puzzle Pack (star)
+
+// Pastel colors
+const BG_COLOR = '#ffe6f7'; // pastel pink
+const WALL_COLOR = '#e0b3ff'; // pastel purple
 
 // Difficulty scaling
 function getMazeSizeForLevel(level) {
@@ -108,26 +118,34 @@ function setupMazeForLevel(level) {
 }
 
 function drawPlayer() {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+    if (playerImg.complete) {
+        ctx.drawImage(playerImg, player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+    } else {
+        ctx.fillStyle = '#ff69b4'; // fallback pink
+        ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+    }
 }
 
 function drawGem() {
-    ctx.fillStyle = 'yellow';
-    ctx.fillRect(gem.x, gem.y, GEM_SIZE, GEM_SIZE);
+    if (gemImg.complete) {
+        ctx.drawImage(gemImg, gem.x, gem.y, GEM_SIZE, GEM_SIZE);
+    } else {
+        ctx.fillStyle = '#ffd1dc'; // fallback pastel pink
+        ctx.fillRect(gem.x, gem.y, GEM_SIZE, GEM_SIZE);
+    }
 }
 
 function drawMaze() {
-    ctx.strokeStyle = '#222';
+    ctx.strokeStyle = WALL_COLOR;
     ctx.lineWidth = 4;
-    ctx.fillStyle = '#222';
+    ctx.fillStyle = WALL_COLOR;
     for (const [x, y, w, h] of walls) {
         ctx.fillRect(x, y, w, h);
     }
 }
 
 function drawVersionInfo() {
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = '#b266b2';
     ctx.font = '24px Arial';
     ctx.textAlign = 'right';
     ctx.fillText(`v${VERSION}`, WIDTH - 10, HEIGHT - 10);
@@ -191,7 +209,8 @@ function resizeCanvas() {
 }
 
 function gameLoop() {
-    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
     drawMaze();
     drawPlayer();
     drawGem();
