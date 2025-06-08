@@ -13,9 +13,14 @@ let player = { x: CELL_SIZE, y: CELL_SIZE, speed: 5 };
 let gem = { x: WIDTH / 2 - GEM_SIZE / 2, y: HEIGHT / 2 - GEM_SIZE / 2 };
 let keys = {};
 
-// Maze grid size
-const MAZE_COLS = WIDTH / CELL_SIZE;
-const MAZE_ROWS = HEIGHT / CELL_SIZE;
+// Difficulty scaling
+function getMazeSizeForLevel(level) {
+    // Level 1: 6x6, Level 10+: 15x15
+    const minSize = 6;
+    const maxSize = 15;
+    const size = Math.min(maxSize, minSize + level - 1);
+    return size;
+}
 
 // Directions: [dx, dy, wallIndex, oppositeWallIndex]
 const DIRS = [
@@ -66,29 +71,41 @@ function generateMaze(cols, rows) {
 }
 
 // Convert maze grid to wall rectangles for rendering
-function mazeToWalls(maze) {
+function mazeToWalls(maze, cellSize) {
+    const rows = maze.length;
+    const cols = maze[0].length;
     const walls = [];
-    for (let y = 0; y < maze.length; y++) {
-        for (let x = 0; x < maze[0].length; x++) {
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
             const [top, right, bottom, left] = maze[y][x];
-            const px = x * CELL_SIZE;
-            const py = y * CELL_SIZE;
-            if (top)    walls.push([px, py, CELL_SIZE, 4]);
-            if (right)  walls.push([px + CELL_SIZE - 4, py, 4, CELL_SIZE]);
-            if (bottom) walls.push([px, py + CELL_SIZE - 4, CELL_SIZE, 4]);
-            if (left)   walls.push([px, py, 4, CELL_SIZE]);
+            const px = x * cellSize;
+            const py = y * cellSize;
+            if (top)    walls.push([px, py, cellSize, 4]);
+            if (right)  walls.push([px + cellSize - 4, py, 4, cellSize]);
+            if (bottom) walls.push([px, py + cellSize - 4, cellSize, 4]);
+            if (left)   walls.push([px, py, 4, cellSize]);
         }
     }
     // Outer border (ensure always present)
-    walls.push([0, 0, WIDTH, 4]);
-    walls.push([0, HEIGHT - 4, WIDTH, 4]);
-    walls.push([0, 0, 4, HEIGHT]);
-    walls.push([WIDTH - 4, 0, 4, HEIGHT]);
+    walls.push([0, 0, cols * cellSize, 4]);
+    walls.push([0, rows * cellSize - 4, cols * cellSize, 4]);
+    walls.push([0, 0, 4, rows * cellSize]);
+    walls.push([cols * cellSize - 4, 0, 4, rows * cellSize]);
     return walls;
 }
 
-let maze = generateMaze(MAZE_COLS, MAZE_ROWS);
-let walls = mazeToWalls(maze);
+// Dynamic maze/grid/cell size
+let maze, walls, MAZE_COLS, MAZE_ROWS, MAZE_CELL_SIZE;
+function setupMazeForLevel(level) {
+    const gridSize = getMazeSizeForLevel(level);
+    MAZE_COLS = gridSize;
+    MAZE_ROWS = gridSize;
+    MAZE_CELL_SIZE = Math.floor(WIDTH / gridSize);
+    maze = generateMaze(MAZE_COLS, MAZE_ROWS);
+    walls = mazeToWalls(maze, MAZE_CELL_SIZE);
+    resetPlayer();
+    resetGem();
+}
 
 function drawPlayer() {
     ctx.fillStyle = 'red';
@@ -149,22 +166,20 @@ function checkGemCollision() {
         player.y + PLAYER_SIZE > gem.y
     ) {
         level++;
-        // Generate a new maze
-        maze = generateMaze(MAZE_COLS, MAZE_ROWS);
-        walls = mazeToWalls(maze);
-        resetPlayer();
-        resetGem();
+        setupMazeForLevel(level);
     }
 }
 
 function resetPlayer() {
-    player.x = CELL_SIZE;
-    player.y = CELL_SIZE;
+    player.x = MAZE_CELL_SIZE + 4;
+    player.y = MAZE_CELL_SIZE + 4;
 }
 
 function resetGem() {
-    gem.x = WIDTH - CELL_SIZE * 2;
-    gem.y = HEIGHT - CELL_SIZE * 2;
+    // Place gem in bottom right cell
+    player.gemCellOffset = 0;
+    gem.x = (MAZE_COLS - 2) * MAZE_CELL_SIZE + (MAZE_CELL_SIZE - GEM_SIZE) / 2;
+    gem.y = (MAZE_ROWS - 2) * MAZE_CELL_SIZE + (MAZE_CELL_SIZE - GEM_SIZE) / 2;
 }
 
 function resizeCanvas() {
@@ -192,5 +207,6 @@ document.addEventListener('keydown', e => { keys[e.key] = true; });
 document.addEventListener('keyup', e => { keys[e.key] = false; });
 
 // Initial resize
+setupMazeForLevel(level);
 resizeCanvas();
 gameLoop(); 
