@@ -6,7 +6,7 @@ const HEIGHT = 800;
 const CELL_SIZE = 40;
 const PLAYER_SIZE = 40;
 const GEM_SIZE = 32;
-const VERSION = '1.0.4'; // Updated version
+const VERSION = '1.0.5'; // Updated version
 
 let level = 1;
 let player = { x: 0, y: 0, speed: 5 };
@@ -30,6 +30,9 @@ const gemImg = loadSprite('sprites/gem.png', 'https://kenney.nl/assets/puzzle-pa
 // Pastel colors
 const BG_COLOR = '#ffe6f7'; // pastel pink
 const WALL_COLOR = '#e0b3ff'; // pastel purple
+const ARROW_BG = '#f3e6ff'; // arrow key background
+const ARROW_ACTIVE = '#ffb3e6'; // arrow key active color
+const ARROW_BORDER = '#b266b2';
 
 // Difficulty scaling
 function getMazeSizeForLevel(level) {
@@ -152,6 +155,56 @@ function drawMaze() {
     }
 }
 
+function drawArrowKeys() {
+    // Draw arrow key indicators in the bottom left corner
+    const baseX = 40, baseY = HEIGHT - 100;
+    const size = 32;
+    // Up
+    drawArrow(baseX + size, baseY, 'up', keys['ArrowUp']);
+    // Left
+    drawArrow(baseX, baseY + size, 'left', keys['ArrowLeft']);
+    // Down
+    drawArrow(baseX + size, baseY + size * 2, 'down', keys['ArrowDown']);
+    // Right
+    drawArrow(baseX + size * 2, baseY + size, 'right', keys['ArrowRight']);
+}
+
+function drawArrow(x, y, dir, active) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.lineJoin = 'round';
+    // Draw background circle
+    ctx.fillStyle = active ? ARROW_ACTIVE : ARROW_BG;
+    ctx.strokeStyle = ARROW_BORDER;
+    ctx.lineWidth = 2;
+    ctx.arc(x + 16, y + 16, 18, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    // Draw arrow
+    ctx.beginPath();
+    ctx.fillStyle = ARROW_BORDER;
+    if (dir === 'up') {
+        ctx.moveTo(x + 16, y + 6);
+        ctx.lineTo(x + 26, y + 26);
+        ctx.lineTo(x + 6, y + 26);
+    } else if (dir === 'down') {
+        ctx.moveTo(x + 16, y + 26);
+        ctx.lineTo(x + 26, y + 6);
+        ctx.lineTo(x + 6, y + 6);
+    } else if (dir === 'left') {
+        ctx.moveTo(x + 6, y + 16);
+        ctx.lineTo(x + 26, y + 6);
+        ctx.lineTo(x + 26, y + 26);
+    } else if (dir === 'right') {
+        ctx.moveTo(x + 26, y + 16);
+        ctx.lineTo(x + 6, y + 6);
+        ctx.lineTo(x + 6, y + 26);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
 function drawVersionInfo() {
     ctx.fillStyle = '#b266b2';
     ctx.font = '24px Arial';
@@ -222,6 +275,7 @@ function gameLoop() {
     drawMaze();
     drawPlayer();
     drawGem();
+    drawArrowKeys();
     drawVersionInfo();
     movePlayer();
     checkGemCollision();
