@@ -21,9 +21,12 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
-# Set up the display
-screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+# Set up the display with resizable flag
+screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE), pygame.RESIZABLE)
 pygame.display.set_caption("Maze Arrow Game")
+
+# Create a surface for the game content
+game_surface = pygame.Surface((WINDOW_SIZE, WINDOW_SIZE))
 
 class Player:
     def __init__(self):
@@ -45,8 +48,8 @@ class Player:
         self.x = new_x
         self.y = new_y
 
-    def draw(self):
-        pygame.draw.rect(screen, RED, (self.x, self.y, PLAYER_SIZE, PLAYER_SIZE))
+    def draw(self, surface):
+        pygame.draw.rect(surface, RED, (self.x, self.y, PLAYER_SIZE, PLAYER_SIZE))
 
 class Gem:
     def __init__(self):
@@ -56,8 +59,8 @@ class Gem:
         self.x = WINDOW_SIZE - CELL_SIZE * 2
         self.y = WINDOW_SIZE - CELL_SIZE * 2
 
-    def draw(self):
-        pygame.draw.rect(screen, YELLOW, (self.x, self.y, GEM_SIZE, GEM_SIZE))
+    def draw(self, surface):
+        pygame.draw.rect(surface, YELLOW, (self.x, self.y, GEM_SIZE, GEM_SIZE))
 
 class Game:
     def __init__(self):
@@ -83,21 +86,28 @@ class Game:
             self.gem.reset_position()
 
     def draw(self):
-        screen.fill(WHITE)
+        # Clear the game surface
+        game_surface.fill(WHITE)
         
         # Draw level text
         level_text = self.font.render(f"Level: {self.level}", True, BLACK)
-        screen.blit(level_text, (10, 10))
+        game_surface.blit(level_text, (10, 10))
         
         # Draw version text in bottom right
         version_text = self.small_font.render(f"v{VERSION}", True, BLACK)
         version_rect = version_text.get_rect(bottomright=(WINDOW_SIZE - 10, WINDOW_SIZE - 10))
-        screen.blit(version_text, version_rect)
+        game_surface.blit(version_text, version_rect)
         
         # Draw player and gem
-        self.player.draw()
-        self.gem.draw()
+        self.player.draw(game_surface)
+        self.gem.draw(game_surface)
         
+        # Scale the game surface to fit the window
+        window_size = screen.get_size()
+        scaled_surface = pygame.transform.scale(game_surface, window_size)
+        
+        # Draw the scaled surface to the screen
+        screen.blit(scaled_surface, (0, 0))
         pygame.display.flip()
 
     def run(self):
@@ -108,6 +118,9 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.VIDEORESIZE:
+                    # Update the screen size when window is resized
+                    screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
             self.handle_input()
             self.check_collision()
