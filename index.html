@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Arrow Game</title>
+    <style>
+        body { background: #f8f8f8; font-family: Arial, sans-serif; text-align: center; }
+        #gameCanvas { background: #fff; display: block; margin: 20px auto; border: 2px solid #222; }
+        .info { margin: 10px auto; }
+    </style>
+</head>
+<body>
+    <h1>Maze Arrow Game</h1>
+    <div class="info">
+        <p>Use the <b>arrow keys</b> to move the red square.<br>
+        Reach the yellow gem in the center to advance to the next level.<br>
+        Touching the walls is ok.</p>
+    </div>
+    <canvas id="gameCanvas" width="800" height="800"></canvas>
+    <div class="info" id="levelInfo"></div>
+    <div class="info" id="versionInfo"></div>
+    <script src="main.js"></script>
+</body>
+</html> 
