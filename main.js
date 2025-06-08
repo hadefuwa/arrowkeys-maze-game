@@ -49,9 +49,11 @@ function drawMaze() {
     }
 }
 
-function drawLevelInfo() {
-    document.getElementById('levelInfo').textContent = `Level: ${level}`;
-    document.getElementById('versionInfo').textContent = `v${VERSION}`;
+function drawVersionInfo() {
+    ctx.fillStyle = '#000';
+    ctx.font = '24px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText(`v${VERSION}`, WIDTH - 10, HEIGHT - 10);
 }
 
 function rectsCollide(ax, ay, aw, ah, bx, by, bw, bh) {
@@ -103,18 +105,39 @@ function resetGem() {
     gem.y = HEIGHT / 2 - GEM_SIZE / 2;
 }
 
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    const containerWidth = container.clientWidth;
+    const containerHeight = container.clientHeight;
+    
+    // Calculate scale to maintain aspect ratio
+    const scale = Math.min(containerWidth / WIDTH, containerHeight / HEIGHT);
+    const newWidth = WIDTH * scale;
+    const newHeight = HEIGHT * scale;
+    
+    // Set canvas size
+    canvas.style.width = `${newWidth}px`;
+    canvas.style.height = `${newHeight}px`;
+    canvas.width = WIDTH;
+    canvas.height = HEIGHT;
+}
+
 function gameLoop() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     drawMaze();
     drawPlayer();
     drawGem();
-    drawLevelInfo();
+    drawVersionInfo();
     movePlayer();
     checkGemCollision();
     requestAnimationFrame(gameLoop);
 }
 
+// Handle window resize
+window.addEventListener('resize', resizeCanvas);
 document.addEventListener('keydown', e => { keys[e.key] = true; });
 document.addEventListener('keyup', e => { keys[e.key] = false; });
 
+// Initial resize
+resizeCanvas();
 gameLoop(); 

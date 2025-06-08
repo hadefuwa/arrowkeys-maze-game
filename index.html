@@ -5,9 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maze Arrow Game</title>
     <style>
-        body { background: #f8f8f8; font-family: Arial, sans-serif; text-align: center; }
-        #gameCanvas { background: #fff; display: block; margin: 20px auto; border: 2px solid #222; }
-        .info { margin: 10px auto; }
+        body { 
+            background: #f8f8f8; 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #gameCanvas { 
+            background: #fff; 
+            display: block; 
+            margin: 20px auto; 
+            border: 2px solid #222;
+            max-width: 100%;
+            height: auto;
+        }
+        .info { 
+            margin: 10px auto;
+            max-width: 800px;
+        }
     </style>
 </head>
 <body>
@@ -18,8 +39,6 @@
         Touching the walls is ok.</p>
     </div>
     <canvas id="gameCanvas" width="800" height="800"></canvas>
-    <div class="info" id="levelInfo"></div>
-    <div class="info" id="versionInfo"></div>
     <script src="main.js"></script>
 </body>
 </html> 
