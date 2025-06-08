@@ -5,29 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maze Arrow Game</title>
     <style>
-        body { 
-            background: #f8f8f8; 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
+        html, body {
+            height: 100%;
             margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            padding: 0;
+            background: #f8f8f8;
+        }
+        body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            min-height: 100vh;
         }
-        #gameCanvas { 
-            background: #fff; 
-            display: block; 
-            margin: 20px auto; 
+        #gameCanvas {
+            background: #fff;
             border: 2px solid #222;
-            max-width: 100%;
-            height: auto;
+            display: block;
+            margin: 0 auto;
+            max-width: 100vw;
+            max-height: 100vh;
         }
-        .info { 
-            margin: 10px auto;
-            max-width: 800px;
+        .info, h1 {
+            margin: 10px 0;
         }
     </style>
 </head>

@@ -106,20 +106,14 @@ function resetGem() {
 }
 
 function resizeCanvas() {
-    const container = canvas.parentElement;
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
-    
+    // Get the available window size (minus a little for margins)
+    const availableWidth = window.innerWidth;
+    const availableHeight = window.innerHeight - 20; // leave a little space for top margin
     // Calculate scale to maintain aspect ratio
-    const scale = Math.min(containerWidth / WIDTH, containerHeight / HEIGHT);
-    const newWidth = WIDTH * scale;
-    const newHeight = HEIGHT * scale;
-    
-    // Set canvas size
-    canvas.style.width = `${newWidth}px`;
-    canvas.style.height = `${newHeight}px`;
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+    const scale = Math.min(availableWidth / WIDTH, availableHeight / HEIGHT);
+    canvas.style.width = `${WIDTH * scale}px`;
+    canvas.style.height = `${HEIGHT * scale}px`;
+    // Do NOT change canvas.width or canvas.height here!
 }
 
 function gameLoop() {
