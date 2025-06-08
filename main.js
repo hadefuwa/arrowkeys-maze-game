@@ -6,18 +6,26 @@ const HEIGHT = 800;
 const CELL_SIZE = 40;
 const PLAYER_SIZE = 40;
 const GEM_SIZE = 32;
-const VERSION = '1.0.3'; // Updated version
+const VERSION = '1.0.4'; // Updated version
 
 let level = 1;
 let player = { x: 0, y: 0, speed: 5 };
 let gem = { x: 0, y: 0 };
 let keys = {};
 
-// Load open-source sprites
-const playerImg = new Image();
-playerImg.src = 'https://kenney.nl/assets/platformer-art-deluxe/PNG/Player/pinkGirl_idle.png'; // Kenney Platformer Art Deluxe (pink girl)
-const gemImg = new Image();
-gemImg.src = 'https://kenney.nl/assets/puzzle-pack/PNG/Default/star.png'; // Kenney Puzzle Pack (star)
+// Load local sprites if available, otherwise use online fallback
+function loadSprite(localPath, fallbackUrl) {
+    const img = new Image();
+    img.src = localPath;
+    img.onerror = function() {
+        img.onerror = null;
+        img.src = fallbackUrl;
+    };
+    return img;
+}
+
+const playerImg = loadSprite('sprites/player.png', 'https://kenney.nl/assets/platformer-art-deluxe/PNG/Player/pinkGirl_idle.png');
+const gemImg = loadSprite('sprites/gem.png', 'https://kenney.nl/assets/puzzle-pack/PNG/Default/star.png');
 
 // Pastel colors
 const BG_COLOR = '#ffe6f7'; // pastel pink
