@@ -6,7 +6,7 @@ const HEIGHT = 800;
 const CELL_SIZE = 40;
 const PLAYER_SIZE = 40;
 const GEM_SIZE = 32;
-const VERSION = '1.0.2'; // Updated version
+const VERSION = '1.0.3'; // Updated version
 
 let level = 1;
 let player = { x: 0, y: 0, speed: 5 };
@@ -118,7 +118,7 @@ function setupMazeForLevel(level) {
 }
 
 function drawPlayer() {
-    if (playerImg.complete) {
+    if (playerImg.complete && playerImg.naturalWidth > 0) {
         ctx.drawImage(playerImg, player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
     } else {
         ctx.fillStyle = '#ff69b4'; // fallback pink
@@ -127,7 +127,7 @@ function drawPlayer() {
 }
 
 function drawGem() {
-    if (gemImg.complete) {
+    if (gemImg.complete && gemImg.naturalWidth > 0) {
         ctx.drawImage(gemImg, gem.x, gem.y, GEM_SIZE, GEM_SIZE);
     } else {
         ctx.fillStyle = '#ffd1dc'; // fallback pastel pink
